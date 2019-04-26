@@ -20,6 +20,12 @@ end
 # title.
 def bearded_films
   MovieDatabase.execute(<<-SQL)
+  SELECT movies.title
+  FROM movies
+  JOIN castings ON movies.id = castings.movie_id
+  JOIN actors ON actors.id = castings.actor_id
+  WHERE actors.name = 'Chuck Norris'
+  ORDER BY movies.title
   SQL
 end
 
@@ -27,6 +33,12 @@ end
 # order by the actor's name.
 def zombie_cast
   MovieDatabase.execute(<<-SQL)
+  SELECT actors.name
+  FROM actors
+  JOIN castings ON castings.actor_id = actors.id
+  JOIN movies ON movies.id = castings.movie_id
+  WHERE movies.title = 'Zombies of the Stratosphere'
+  ORDER BY actors.name
   SQL
 end
 
@@ -35,6 +47,14 @@ end
 # >2 movies. Order by year. Note the 'V' is capitalized.
 def biggest_years_for_little_danny
   MovieDatabase.execute(<<-SQL)
+  SELECT movies.yr, COUNT(movies.id) AS count
+  FROM movies
+  JOIN castings ON castings.movie_id = movies.id
+  JOIN actors ON actors.id = castings.actor_id
+  WHERE actors.name = 'Danny DeVito'
+  GROUP BY movies.yr
+  HAVING COUNT(movies.id) > 2
+  ORDER BY movies.yr
   SQL
 end
 
@@ -46,7 +66,8 @@ def more_cage_please
   FROM movies
   JOIN castings ON castings.movie_id = movies.id
   JOIN actors ON castings.actor_id = actors.id
-  WHERE actor.name = 'Nicolas Cage' AND castings.ord != 1;
+  WHERE actors.name = 'Nicolas Cage' AND castings.ord != 1;
+  ORDER BY movies.title
 
   SQL
 end
@@ -72,8 +93,11 @@ def count_bad_actors
   MovieDatabase.execute(<<-SQL)
   SELECT COUNT(actors.id) AS num_bad_actors
   FROM actors
-  LEFT JOIN castings ON actors.id = castings.actor_id
-  WHERE actors.id IS NULL;
+  WHERE actors.id NOT IN (
+    SELECT actors.id
+    FROM actors
+    JOIN castings ON actors.id = castings.actor_id
+  );
 SQL
 end
 
@@ -94,5 +118,14 @@ end
 # 'Chris Farley' played in.
 def chris_is_missed
   MovieDatabase.execute(<<-SQL)
+  SELECT movies.title, lead_actors.name
+  FROM movies
+  JOIN castings AS chris_castings ON chris_castings.movie_id = movies.id
+  JOIN actors AS chris_actors ON chris_castings.actor_id = chris_actors.id
+  
+  JOIN castings AS lead_castings ON lead_castings.movie_id = movies.id
+  JOIN actors AS lead_actors ON lead_actors.id = lead_castings.actor_id
+  WHERE chris_actors.name = 'Chris Farley' AND lead_castings.ord = 1;
+
   SQL
 end
