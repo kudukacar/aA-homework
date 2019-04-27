@@ -10,4 +10,14 @@
 #
 
 class TeachingAssistantMembership < ApplicationRecord
+
+    belongs_to :teaching_assistant,
+    primary_key: :id,
+    foreign_key: :teaching_assistant_id,
+    class_name: 'Developer'
+
+    belongs_to  :pod,
+    primary_key: :id,
+    foreign_key: :pod_id,
+    class_name: 'Pod'
 end

@@ -2,7 +2,8 @@ class Company < ApplicationRecord
     belongs_to :exchange,
         primary_key: :id,
         foreign_key: :exchange_id,
-        class_name: :Exchange
+        class_name: :Exchange,
+        optional: true
 
     has_many :prices,
         primary_key: :id,
@@ -20,7 +21,7 @@ class Company < ApplicationRecord
 
     has_many :watchers,
         through: :watch_lists,
-        source: :watcher
+        source: :user
 
     has_one :board,
         primary_key: :id,
@@ -31,6 +32,7 @@ class Company < ApplicationRecord
         primary_key: :id,
         foreign_key: :parent_company_id,
         class_name: :Company
+        optional: true
 
     has_many :subsidiaries,
         primary_key: :id,

@@ -11,4 +11,31 @@
 #
 
 class Pod < ApplicationRecord
+    # has_many :circles,
+    # primary_key: :id,
+    # foreign_key: :pod_id,
+    # class_name: 'Circle'
+
+    has_many :students,
+    primary_key: :id,
+    foreign_key: :student_pod_id,
+    class_name: 'Developer'
+
+    belongs_to :pod_leader,
+    primary_key: :id,
+    foreign_key: :pod_leader_id,
+    class_name: 'Developer'
+
+    has_many :teaching_assistant_memberships,
+    primary_key: :id,
+    foreign_key: :pod_id,
+    class_name: 'TeachingAssistantMembership'
+
+    has_many :teaching_assistants,
+    through: :teaching_assistant_memberships,
+    source: :teaching_assistant
+
+
+
+
 end
